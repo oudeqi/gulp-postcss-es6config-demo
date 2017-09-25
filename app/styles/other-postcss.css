@@ -1,0 +1,273 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+
+/*will-change 给不支持will-change属性的浏览器触发GPU处理器*/
+.thisWillChange {
+	will-change: transform;
+}
+
+/*postcss-color-rgba-fallback IE8不支持rgba()颜色，添加了一个十六进制颜色作为降级处理*/
+.rgbaFallback {
+	background: rgba(0,0,0,0.5);
+}
+
+/*postcss-opacity IE8也不支持opacity属性，给IE浏览器添加滤镜属性，作为降级处理。*/
+.opacityFallback {
+	opacity: 0.5;
+}
+
+/*postcss-pseudoelements 在IE8中仅支持一个冒号:，并不支持::的伪元素*/
+.pseudo-element::before {
+	content: '';
+}
+
+/*postcss-vmin 给不支持vmin的ie9作降级处理,ie9只支持vm*/
+.vmFallback {
+	width: 50vmin;
+}
+
+/*postcss-at2x retina自动使用2倍图片*/
+.multi {
+	background: url(http://example.com/image.png),
+		linear-gradient(to right, rgba(255, 255, 255, 0),  rgba(255, 255, 255, 1)),
+		green,
+		url(/public/images/cool.png) at-2x;
+}
+
+/*
+	postcss-calc 
+	尽可能让calc输出静态的值
+	如果它不能，需要浏览器自己根据calc()进行动态计算。
+*/
+@define-mixin columns_calc $count { 
+	width: calc( 100% / $count );
+	@if $count > 1 {
+		float: left;
+	} 
+} 
+.column_calculated {
+	@mixin columns_calc 2;
+}
+
+/*postcss-write-svg 在样式表的写svg*/
+@svg square {
+	@rect {
+		fill: var(--color, #fff);
+		width: var(--size);
+		height: var(--size);
+		x: 0;
+		y: 0;
+		rx: 4;
+		ry: 4;
+		stroke: #000;
+		stroke-width: 1;
+	}
+}
+
+@svg line {
+	@line  {
+		x1: 0%;
+		y1: 0;
+		x2: 0%;
+		y2: 100%;
+		stroke: #000;
+		stroke-width: 1;
+	}
+}
+
+@svg polygon {
+	@rect {
+		fill: var(--color, pink);
+		width: var(--size);
+		height: var(--size);
+		stroke-width:1;
+		stroke: #000;
+	}
+}
+
+.svg-background-1px {
+	margin: 20px;
+	height: 50px;
+	background: svg(square param(--color green) param(--size 100%)) center / cover;
+}
+
+/*-------------------------*/
+@svg 1px-border {
+	height: 2px;
+	@rect {
+		fill: var(--color, black);
+		width: 100%;
+		height: 50%;
+	}
+}
+.svg-border-image-1px{
+	margin: 20px;
+	height: 50px;
+	border: 1px solid transparent;
+	border-image: svg(1px-border param(--color, #00b1ff)) 2 2 stretch;
+}
+
+/*-------------------------*/
+.test-real-1px{
+	margin: 20px;
+	height: 50px;
+	border: 1px solid #000;
+}
+
+/*postcss-aspect-ratio-mini 长宽比效果*/
+.aspect-box{
+    position: relative;
+	margin-top: 20px;
+}
+.aspect-box::before {
+	content: '';
+	display: block;
+	width: 1px;
+	margin-left: -1px;
+	height: 0
+}
+.aspect-box-content{
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+    background-color: red;
+}
+.aspect-box[aspect-ratio="16:9"]{
+	aspect-ratio: '16:9';
+}
+
+/*postcss-px-to-viewport*/
+.class {
+  margin: 10px .5vh;
+  padding: 5vmin 9.5px 1px;
+  border: 3px solid black;
+  border-bottom-width: 1px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.class2 {
+  border: 1px solid black;
+  margin-bottom: 1px;
+  font-size: 20px;
+  line-height: 30px;
+}
+@media (min-width: 750px) {
+  .class3 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+/*postcss-px2rem px转rem*/
+.px2rem{
+	width: 375px;
+	height: 375px;
+	background: black;
+}
+
+/*postcss-functions 自定义函数 px转rem*/
+.px2rem2{
+	width: px2rem(375);
+	height: px2rem(375);
+	background: #000;
+	color: darken(blue, 0.1);
+}
+
+/*postcss-responsive-type 响应式文本*/
+html {
+	font-size: responsive;
+	/*lower-font-range: 375px;*/
+	/*适配320宽屏幕*/
+	lower-font-range: 320px;
+	upper-font-range: 750px;
+	/*min-font-size: 16;*/
+	min-font-size: calc(16px * 320 / 375);
+	max-font-size: 32px;
+}
+
+/*postcss-mq-keyframes 将所有关键帧从现有媒体查询中移动到样式表的底部*/
+@media only screen and (min-width: 415px) {
+    .pace {
+        animation: pace-anim 5s;
+    }
+    @keyframes pace-anim {
+        100% {
+            opacity: 0;
+        }
+    }
+}
+
+/*css-mqpacker 相同的媒体查询样式合并到一个媒体查询中*/
+.foo {
+  width: 240px;
+}
+
+@media screen and (min-width: 768px) {
+  .foo {
+    width: 576px;
+  }
+}
+
+.bar {
+  width: 160px;
+}
+
+@media screen and (min-width: 768px) {
+  .bar {
+    width: 384px;
+  }
+}
+
+/*content属性也可以用*/
+img{
+	content: url(./images.xxx.png);
+}
+
+/*postcss-assets*/
+.img-resolve{
+	background-image: resolve('../images/lucky_02.jpg');
+}
+.img-inline{
+	background: inline('../images/amuse-i.png');
+}
+.img-size{
+	width: width('../images/lucky_02.jpg');
+	height: height('../images/lucky_02.jpg');
+	background-size: size('../images/lucky_02.jpg');
+}
+.img-size@2x{
+	width: width('../images/lucky_02.jpg', 2);
+	height: height('../images/lucky_02.jpg', 2);
+	background-size: size('../images/lucky_02.jpg', 2);
+}
+
+/*postcss-sprites*/
+.comment {
+	background: url(../images/sprite/tel.jpg) no-repeat 0 0;
+}
+.bubble {
+	background: url(../images/sprite/eye.png) no-repeat 0 0;
+}
+
+/*postcss-fontpath*/
+@font-face {
+  font-family: "xxx";
+  font-path: '../fonts/xxx';
+  font-weight: normal;
+  font-style: normal;
+}
+/*@font-face {
+  font-family: 'xxx';
+  src:url('../fonts/xxx.otf?');
+  font-weight: normal;
+  font-style: normal;
+}*/
+.xxx-font{
+	font-family: "xxx"
+}

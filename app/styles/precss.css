@@ -1,0 +1,126 @@
+/*precss 特性 */
+/*
+	Imports:你可以设置一个partials文件夹，
+	放置一些逻辑上分散的文件，你可以通过下面的方式导入：
+*/
+/*
+	@import "partials/_variables.css";
+	@import "partials/_utilities.css";
+	@import "partials/_mixins.css";
+	@import "partials/_extends.css";
+*/
+@import "./test.css";
+/*
+	嵌套：PreCSS和其的预处理器一样，
+	可以使用&符，把父选择器复制到子选择器中
+*/
+.menu { 
+	width: 100%; 
+	a { text-decoration: none; } 
+	&::before { content: ''; } 
+}
+
+/* precss包含的postcss-color-function 提供颜色函数*/
+.color-function {
+	color: color(red a(90%));
+	background-color: color(red lightness(50%)); /* == color(red l(50%)); */
+	border-color: color(hsla(125, 50%, 50%, .4) saturation(+ 10%) w(- 20%));
+}
+
+/*变量*/
+$text_color: #ccc;
+
+/*条件*/
+$column_layout: 2; 
+.column { 
+	@if $column_layout == 2 { 
+		width: 50%; 
+		float: left; 
+	} @else { 
+		width: 100%; 
+	} 
+}
+
+/*循环*/
+@for $i from 1 to 3 { 
+	p:nth-of-type($i) { 
+		margin-left: calc( 100% / $i ); 
+	} 
+}
+
+$social: twitter, facebook, youtube; 
+@each $icon in ($social){ 
+	.icon-$(icon) { 
+		background: url('img/$(icon).png'); 
+	} 
+}
+
+/*混合宏(Mixins)*/
+@define-mixin icon $network, $color { 
+	.button.$(network) { 
+		background-image: url('img/$(network).png'); 
+		background-color: $color; 
+	} 
+} 
+@mixin icon twitter, blue; 
+@mixin icon youtube, red;
+
+/*使用@mixin-content*/
+@define-mixin icon $network, $color { 
+	.button.$(network) { 
+		background-image: url('img/$(network).png'); 
+		background-color: $color; @mixin-content; 
+	} 
+}
+@mixin icon twitter, blue { 
+	width: 3rem; 
+} 
+@mixin icon youtube, red { 
+	width: 4rem; 
+}
+
+/*
+	扩展:在某种意义上扩展类似于混合宏，他们旨在让你复用重用的代码块。
+	然而，扩展的想法是创建一个多次复用的代码块。
+*/
+@define-extend rounded_button { 
+	border-radius: 0.5rem; 
+	padding: 1em; 
+	border-width: 0.0625rem; 
+	border-style: solid; 
+}
+.blue_button { 
+	@extend rounded_button; 
+	border-color: #2F74D1; 
+	background-color: #3B8EFF; 
+} 
+.red_button { 
+	@extend rounded_button; 
+	border-color: #C41A1E; 
+	background-color: #FF2025; 
+}
+
+/*Root*/
+.parent {
+	background: white;
+	@at-root{
+		.child {
+			background: black;
+		}
+	}
+}
+
+/*媒体查询*/
+@media screen and (500px <= width <= 1200px){
+	.minmax{
+		font-size: 20px;
+	}
+}
+@custom-media --foo (width >= 20em) and (width <= 50em);
+@custom-media --bar (height >= 300px) and (height <= 600px);
+@media (--foo) and (--bar) {
+	.minmax{
+		font-size: 40px;
+	}
+}
+
