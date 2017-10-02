@@ -69,7 +69,8 @@ $social: twitter, facebook, youtube;
 @define-mixin icon $network, $color { 
 	.button.$(network) { 
 		background-image: url('img/$(network).png'); 
-		background-color: $color; @mixin-content; 
+		background-color: $color; 
+		@mixin-content; 
 	} 
 }
 @mixin icon twitter, blue { 

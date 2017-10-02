@@ -26,7 +26,7 @@ const processors = [
 	require('postcss-functions')({
 		functions: {
 	        px2rem: function (int) {
-	        	return parseFloat(int / 32) + 'rem';
+	        	return parseFloat(parseInt(int) / 32) + 'rem';
 	        }
 	    }
 	}),//自定义函数 px2rem
